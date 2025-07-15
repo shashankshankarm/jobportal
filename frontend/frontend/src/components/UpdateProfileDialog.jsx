@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Label } from './ui/label'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
-import { Loader2 } from 'lucide-react'
+import { Loader2, X, User, Mail, Phone, FileText, Code, Upload } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 import { USER_API_END_POINT } from '@/utils/constant'
@@ -28,9 +28,19 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
         setInput({ ...input, [e.target.name]: e.target.value });
     }
 
+    const phoneChangeHandler = (e) => {
+        // Only allow numbers and basic formatting characters
+        const value = e.target.value.replace(/[^0-9+\-\s()]/g, '');
+        setInput({ ...input, phoneNumber: value });
+    }
+
     const fileChangeHandler = (e) => {
         const file = e.target.files?.[0];
         setInput({ ...input, file })
+    }
+
+    const handleClose = () => {
+        setOpen(false);
     }
 
     const submitHandler = async (e) => {
@@ -59,97 +69,177 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
         } catch (error) {
             console.log(error);
             toast.error(error.response.data.message);
-        } finally{
+        } finally {
             setLoading(false);
         }
         setOpen(false);
         console.log(input);
     }
 
-
-
     return (
-        <div>
-            <Dialog open={open}>
-                <DialogContent className="sm:max-w-[425px]" onInteractOutside={() => setOpen(false)}>
-                    <DialogHeader>
-                        <DialogTitle>Update Profile</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={submitHandler}>
-                        <div className='grid gap-4 py-4'>
-                            <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor="name" className="text-right">Name</Label>
-                                <Input
-                                    id="name"
-                                    name="name"
-                                    type="text"
-                                    value={input.fullname}
-                                    onChange={changeEventHandler}
-                                    className="col-span-3"
-                                />
-                            </div>
-                            <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor="email" className="text-right">Email</Label>
-                                <Input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    value={input.email}
-                                    onChange={changeEventHandler}
-                                    className="col-span-3"
-                                />
-                            </div>
-                            <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor="number" className="text-right">Number</Label>
-                                <Input
-                                    id="number"
-                                    name="number"
-                                    value={input.phoneNumber}
-                                    onChange={changeEventHandler}
-                                    className="col-span-3"
-                                />
-                            </div>
-                            <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor="bio" className="text-right">Bio</Label>
-                                <Input
-                                    id="bio"
-                                    name="bio"
-                                    value={input.bio}
-                                    onChange={changeEventHandler}
-                                    className="col-span-3"
-                                />
-                            </div>
-                            <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor="skills" className="text-right">Skills</Label>
-                                <Input
-                                    id="skills"
-                                    name="skills"
-                                    value={input.skills}
-                                    onChange={changeEventHandler}
-                                    className="col-span-3"
-                                />
-                            </div>
-                            <div className='grid grid-cols-4 items-center gap-4'>
-                                <Label htmlFor="file" className="text-right">Resume</Label>
-                                <Input
-                                    id="file"
-                                    name="file"
-                                    type="file"
-                                    accept="application/image"
-                                    onChange={fileChangeHandler}
-                                    className="col-span-3"
-                                />
-                            </div>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+                {/* Custom Close Button */}
+                <button
+                    onClick={handleClose}
+                    className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none z-10"
+                    disabled={loading}
+                >
+                    <X className="h-4 w-4" />
+                    <span className="sr-only">Close</span>
+                </button>
+
+                <DialogHeader className="space-y-3">
+                    <DialogTitle className="text-2xl font-bold text-center flex items-center justify-center gap-2">
+                        <User className="h-6 w-6 text-blue-600" />
+                        Update Profile
+                    </DialogTitle>
+                    <p className="text-sm text-muted-foreground text-center">
+                        Keep your information up to date
+                    </p>
+                </DialogHeader>
+
+                <form onSubmit={submitHandler} className="space-y-6">
+                    <div className="space-y-4">
+                        {/* Full Name */}
+                        <div className="space-y-2">
+                            <Label htmlFor="fullname" className="text-sm font-medium flex items-center gap-2">
+                                <User className="h-4 w-4 text-blue-600" />
+                                Full Name
+                            </Label>
+                            <Input
+                                id="fullname"
+                                name="fullname"
+                                type="text"
+                                value={input.fullname}
+                                onChange={changeEventHandler}
+                                className="w-full h-11 px-3 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                placeholder="Enter your full name"
+                                disabled={loading}
+                            />
                         </div>
-                        <DialogFooter>
-                            {
-                                loading ? <Button className="w-full my-4"> <Loader2 className='mr-2 h-4 w-4 animate-spin' /> Please wait </Button> : <Button type="submit" className="w-full my-4">Update</Button>
-                            }
-                        </DialogFooter>
-                    </form>
-                </DialogContent>
-            </Dialog>
-        </div>
+
+                        {/* Email */}
+                         {/* Email */}
+                        <div className="space-y-2">
+                            <Label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
+                                <Mail className="h-4 w-4 text-green-600" />
+                                Email Address
+                            </Label>
+                            <Input
+                                id="email"
+                                name="email"
+                                type="email"
+                                value={input.email}
+                                onChange={changeEventHandler}
+                                className="w-full h-11 px-3 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-gray-50 cursor-not-allowed"
+                                placeholder="Enter your email address"
+                                disabled={true}
+                                readOnly={true}
+                            />
+                        </div>
+
+                        {/* Phone Number */}
+                        <div className="space-y-2">
+                            <Label htmlFor="phoneNumber" className="text-sm font-medium flex items-center gap-2">
+                                <Phone className="h-4 w-4 text-purple-600" />
+                                Phone Number
+                            </Label>
+                            <Input
+                                id="phoneNumber"
+                                name="phoneNumber"
+                                type="tel"
+                                value={input.phoneNumber}
+                                onChange={phoneChangeHandler}
+                                className="w-full h-11 px-3 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                placeholder="Enter your phone number"
+                                disabled={loading}
+                            />
+                        </div>
+
+                        {/* Bio */}
+                        <div className="space-y-2">
+                            <Label htmlFor="bio" className="text-sm font-medium flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-orange-600" />
+                                Bio
+                            </Label>
+                            <Input
+                                id="bio"
+                                name="bio"
+                                value={input.bio}
+                                onChange={changeEventHandler}
+                                className="w-full h-11 px-3 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                placeholder="Tell us about yourself"
+                                disabled={loading}
+                            />
+                        </div>
+
+                        {/* Skills */}
+                        <div className="space-y-2">
+                            <Label htmlFor="skills" className="text-sm font-medium flex items-center gap-2">
+                                <Code className="h-4 w-4 text-indigo-600" />
+                                Skills
+                            </Label>
+                            <Input
+                                id="skills"
+                                name="skills"
+                                value={input.skills}
+                                onChange={changeEventHandler}
+                                className="w-full h-11 px-3 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                placeholder="e.g., JavaScript, React, Node.js"
+                                disabled={loading}
+                            />
+                        </div>
+
+                        {/* Resume Upload */}
+                        <div className="space-y-2">
+                            <Label htmlFor="file" className="text-sm font-medium flex items-center gap-2">
+                                <Upload className="h-4 w-4 text-red-600" />
+                                Resume
+                            </Label>
+                            <Input
+                                id="file"
+                                name="file"
+                                type="file"
+                                accept=",pdf,.png,.jpg,jpeg,application/png,application/jpg,application/jpeg,application/pdf"
+                                onChange={fileChangeHandler}
+                                className="w-full h-11 px-3 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 file:border-0 file:bg-transparent file:text-sm file:font-medium"
+                                disabled={loading}
+                            />
+                            <p className="text-xs text-muted-foreground">
+                                Upload your resume (PNG, JPG, JPEG formats only)
+                            </p>
+                        </div>
+                    </div>
+
+                    <DialogFooter className="flex flex-col sm:flex-row gap-2 pt-4">
+                        <Button 
+                            type="button" 
+                            variant="outline" 
+                            onClick={handleClose}
+                            className="w-full sm:w-auto order-2 sm:order-1"
+                            disabled={loading}
+                        >
+                            Cancel
+                        </Button>
+                        <Button 
+                            type="submit" 
+                            className="w-full sm:w-auto order-1 sm:order-2 bg-blue-600 hover:bg-blue-700"
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Updating...
+                                </>
+                            ) : (
+                                'Update Profile'
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
     )
 }
 

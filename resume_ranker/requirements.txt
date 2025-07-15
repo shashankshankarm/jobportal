@@ -1,5 +1,0 @@
-flask
-pdfplumber
-nltk
-scikit-learn
-sentence-transformers

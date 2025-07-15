@@ -1,4 +1,5 @@
 import Job  from "../models/job.model.js";
+import Application from "../models/application.model.js";
 
 // admin post krega job
 export const postJob = async (req, res) => {
@@ -100,3 +101,36 @@ export const getAdminJobs = async (req, res) => {
         console.log(error);
     }
 }
+export const deleteJobById = async (req, res) => {
+    try {
+        const jobId = req.params.id;
+          console.log("Deleting job with ID:", jobId);
+        const job = await Job.findById(jobId);
+        console.log("Found job:", job);
+        if (!job) {
+            return res.status(404).json({
+                message: "Job not found.",
+                success: false
+            });
+        }
+
+        // Delete all applications linked to this job
+        if (job.applications && job.applications.length > 0) {
+            await Application.deleteMany({ _id: { $in: job.applications } });
+        }
+
+        // Delete the job itself
+        await Job.findByIdAndDelete(jobId);
+
+        return res.status(200).json({
+            message: "Job and its applications deleted successfully.",
+            success: true
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Something went wrong.",
+            success: false
+        });
+    }
+};
